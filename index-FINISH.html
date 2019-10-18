@@ -2,35 +2,124 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Array Cardio 2 </title>
+  <title>Type Ahead </title>
 </head>
-<p><em>Psst: have a look at the JavaScript Console</em> 💁</p>
-  <script>
-    // ## Array Cardio Day 2
-    const people = [
-      { name: 'Wes', year: 1988 },
-      { name: 'Kait', year: 1986 },
-      { name: 'Irv', year: 1970 },
-      { name: 'Lux', year: 2015 }
-    ];
-    const comments = [
-      { text: 'Love this!', id: 523423 },
-      { text: 'Super good', id: 823423 },
-      { text: 'You are the best', id: 2039842 },
-      { text: 'Ramen is my fav food ever', id: 123523 },
-      { text: 'Nice Nice Nice!', id: 542328 }
-    ];
-    // Some and Every Checks
-    // Array.prototype.some() // is at least one person 19?
-    // Array.prototype.every() // is everyone 19?
-    // Array.prototype.find()
-    // Find is like filter, but instead returns just the one you are looking for
-    // find the comment with the ID of 823423
-    // Array.prototype.findIndex()
-    // Find the comment with this ID
-    // delete the comment with the ID of 823423
-    // comments.splice(index, 1);
+<style>
+html{
+    box-sizing: border-box;
+    background-color:#ffcc33;
+    font-family:'helvetica neue';
+    font-size:20pxs;
+    font-weight:200;
+  }
+  form{
+    max-width:500px;
+    margin:50px auto;
+  }
+  input{
+  margin: 0;
+  text-align: center;
+  outline: 0;
+  border: 10px solid #F7F7F7;
+  width: 120%;
+  left: -10%;
+  position: relative;
+  top: 10px;
+  z-index: 2;
+  border-radius: 5px;
+  font-size: 40px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.12), inset 0 0 2px rgba(0, 0, 0, 0.19);
+  }
+  ul{
+  list-style-type:none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  }
+ li{
+  background: white;
+  list-style: none;
+  border-bottom: 1px solid #D8D8D8;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.14);
+  margin: 0;
+  padding: 20px;
+  transition: background 0.2s;
+  display: flex;
+  justify-content: space-between;
+  text-transform: capitalize;
+   
+ }
+
+ .suggestions li:nth-child(even) {
+  transform: perspective(100px) rotateX(3deg) translateY(2px) scale(1.001);
+  background: linear-gradient(to bottom,  #ffffff 0%,#EFEFEF 100%);
+}
+
+.suggestions li:nth-child(odd) {
+  transform: perspective(100px) rotateX(-3deg) translateY(3px);
+  background: linear-gradient(to top,  #ffffff 0%,#EFEFEF 100%);
+}
+.highlight{
+   background-color: #ffcc33
+ }
+ span.population {
+  font-size: 15px;
+}
+</style>
+<body>
+  <form>
+    <input class="search" type="search" placeholder="City or State">
+
+    <ul class="suggestions">
+      <li>hello</li>
+    </ul>
+  </form>
+
+<script>
+const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+
+const cities = [];
+fetch(endpoint)
+  .then(blob => blob.json())
+  .then(data => cities.push(...data));
+
+
+function findMatches(wordToMatch, cities) {
+  return cities.filter(place => {
+    // here we need to figure out if the city or state matches what was searched
+    const regex = new RegExp(wordToMatch, 'gi');
+    return place.city.match(regex) || place.state.match(regex)
+  });
+}
+function numberWithComma(x){
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g,',')
+
+}
+
+function displayMatches(){
+  console.log(this.value)
+const matchArray=findMatches(this.value,cities)
+console.log(matchArray)
+const html=matchArray.map(place => {
+  const regex= new RegExp(this.value, "gi")
+  const cityName = place.city.replace(regex, `<span class="highlight">${this.value}</span>`);
+    const stateName = place.state.replace(regex, `<span class="highlight">${this.value}</span>`);
+  return `
+      <li>
+        <span class="name">${cityName}, ${stateName}</span>
+        <span class="population"> ${numberWithComma(place.population)}</span>
+      </li>
+    `;
+  }).join('');
+  suggestions.innerHTML = html;
+}
+const searchInput=document.querySelector(".search")
+const suggestions=document.querySelector('.suggestions')
+
+searchInput.addEventListener('change',displayMatches)
+searchInput.addEventListener('keyup',displayMatches)
+
+
 </script>
-
-
+</body>
 </html>
